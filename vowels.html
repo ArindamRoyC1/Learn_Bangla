@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Bangla স্বরবর্ণ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .vowel-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .vowel-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .vowel-card h2 {
+            font-size: 2em;
+            color: #007BFF;
+        }
+        .example-words {
+            margin: 10px 0;
+            text-align: left;
+        }
+        .audio-icon {
+            font-size: 1.2em;
+            color: #007BFF;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>
+            Learn Bangla Vowels (স্বরবর্ণ 
+            <i class="audio-icon" onclick="playAudio('স্বরবর্ণ')">🔊</i>)
+        </h1>
+        <p>Click on the audio icons to hear pronunciations!</p>
+    </header>
+    <main class="vowel-section" id="vowel-section">
+        <!-- Dynamic content will be injected here -->
+    </main>
+    <footer>
+        <p>Learn Bangla © 2024 | Contact: info@learnbangla.com</p>
+    </footer>
+
+    <script>
+        const apiUrl = "https://script.google.com/macros/s/AKfycbyoMt2-d1ZVA1ks_aX2Su9CEO_JvHnoBwtO0vEYgguU7LDkpEzWkMEd4agINsyzTgryoQ/exec";
+
+        async function fetchData() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+
+                console.log("Fetched Data:", data); // Debugging
+
+                const vowelSection = document.getElementById("vowel-section");
+                data.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "vowel-card";
+
+                    // Split example words and meanings into separate arrays
+                    const words = item.exampleWords[0].split(",").map(w => w.trim());
+                    const meanings = item.meanings[0].split(",").map(m => m.trim());
+
+                    // Generate the HTML for the word list
+                    const wordListHTML = words.map((word, index) => `
+                        <li>${word} - ${meanings[index] || "No meaning"} 
+                            <i class="audio-icon" onclick="playAudio('${word}')">🔊</i>
+                        </li>
+                    `).join("");
+
+                    // Populate the card
+                    card.innerHTML = `
+                        <h2>${item.vowel} (${item.transliteration})</h2>
+                        <p>Example Words:</p>
+                        <ul class="example-words">
+                            ${wordListHTML}
+                        </ul>
+                        <p>Pronounce ${item.vowel}: <i class="audio-icon" onclick="playAudio('${item.vowel}')">🔊</i></p>
+                    `;
+
+                    vowelSection.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error fetching or processing data:", error);
+                document.getElementById("vowel-section").innerHTML = `
+                    <p style="color: red; text-align: center;">Error loading data. Please try again later.</p>
+                `;
+            }
+        }
+
+        function playAudio(text) {
+            const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=${encodeURIComponent(text)}&tl=bn`;
+            const audio = new Audio(audioUrl);
+            audio.play();
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>
