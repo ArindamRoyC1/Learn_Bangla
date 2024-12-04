@@ -52,6 +52,7 @@
             color: white;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
     <header>
@@ -69,24 +70,20 @@
     </footer>
 
     <script>
-        // Raw URL for the CSV file in your GitHub repository
         const csvFilePath = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/main/Bangla_Vowels.csv";
 
         async function fetchCSVData() {
             const response = await fetch(csvFilePath);
             const csvData = await response.text();
 
-            const rows = csvData.split("\n").slice(1); // Skip the header row
-            return rows.map(row => {
-                const [vowel, transliteration, exampleWords, meanings, name] = row.split(",");
-                return {
-                    vowel: vowel.trim(),
-                    transliteration: transliteration.trim(),
-                    exampleWords: exampleWords ? exampleWords.split("|").map(word => word.trim()) : [],
-                    meanings: meanings ? meanings.split("|").map(meaning => meaning.trim()) : [],
-                    name: name ? name.trim() : "" // Handle empty names
-                };
-            });
+            // Parse CSV using PapaParse
+            const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
+            return parsedData.data.map(row => ({
+                vowel: row.Vowel.trim(),
+                transliteration: row.Transliteration.trim(),
+                exampleWords: row["Example Words"] ? row["Example Words"].split(",").map(word => word.trim()) : [],
+                meanings: row.Meanings ? row.Meanings.split(",").map(meaning => meaning.trim()) : []
+            }));
         }
 
         async function displayVowels() {
@@ -104,16 +101,8 @@
                     </li>
                 `).join("");
 
-                // Add name only if it exists
-                const nameSection = item.name 
-                    ? `<p><strong>Name:</strong> ${item.name} 
-                        <i class="audio-icon" onclick="playAudio('${item.name}')">🔊</i></p>` 
-                    : "";
-
                 card.innerHTML = `
                     <h2>${item.vowel} (${item.transliteration})</h2>
-                    ${nameSection}
-                    <p>Example Words:</p>
                     <ul class="example-words">
                         ${wordListHTML}
                     </ul>
