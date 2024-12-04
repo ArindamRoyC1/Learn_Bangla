@@ -57,8 +57,7 @@
 <body>
     <header>
         <h1>
-            Learn Bangla Vowels (স্বরবর্ণ 
-            <i class="audio-icon" onclick="playAudio('স্বরবর্ণ')">🔊</i>)
+            Learn Bangla Vowels (স্বরবর্ণ)
         </h1>
         <p>Click on the audio icons to hear pronunciations!</p>
     </header>
@@ -71,6 +70,7 @@
 
     <script>
         const csvFilePath = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/main/Bangla_Vowels.csv";
+        const audioFolder = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/main/audio_files/";
 
         async function fetchCSVData() {
             const response = await fetch(csvFilePath);
@@ -97,7 +97,7 @@
                 // Generate word list
                 const wordListHTML = item.exampleWords.map((word, index) => `
                     <li>${word} - ${item.meanings[index] || "No meaning"} 
-                        <i class="audio-icon" onclick="playAudio('${word}')">🔊</i>
+                        <i class="audio-icon" onclick="playAudio('${word.trim().replace(/\s/g, "_")}.mp3')">🔊</i>
                     </li>
                 `).join("");
 
@@ -106,15 +106,15 @@
                     <ul class="example-words">
                         ${wordListHTML}
                     </ul>
-                    <p>Pronounce ${item.vowel}: <i class="audio-icon" onclick="playAudio('${item.vowel}')">🔊</i></p>
+                    <p>Pronounce ${item.vowel}: <i class="audio-icon" onclick="playAudio('${item.vowel.trim().replace(/\s/g, "_")}.mp3')">🔊</i></p>
                 `;
 
                 vowelSection.appendChild(card);
             });
         }
 
-        function playAudio(text) {
-            const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=${encodeURIComponent(text)}&tl=bn`;
+        function playAudio(filename) {
+            const audioUrl = audioFolder + filename;
             const audio = new Audio(audioUrl);
             audio.play();
         }
