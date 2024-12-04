@@ -1,3 +1,13 @@
-Vowel,Transliteration,Example Words,Meanings
-অ,A,"অজগর, অমল","Python, Name"
-আ,Aa,"আম, আকাশ","Mango, Sky"
+Vowel,Transliteration,Example Words,Meanings,Name
+অ,A,"অজগর, অমল","Python, A common name",অ 
+আ,Aa,"আম, আকাশ","Mango, Sky",আ
+ই,I,"ইঁদুর, ইলিশ","Rat, Hilsa (a fish)",হ্রস্ব ই
+ঈ,Ee,"ঈগল, ঈশ্বর","Eagle, God",দীর্ঘ ঈ
+উ,U,"উট, উল্টো","Camel, Opposite",হ্রস্ব উ
+ঊ,Oo,"ঊষা, ঊনান","Dawn, Stove",দীর্ঘ ঊ
+ঋ,Ri,"ঋণ, ঋতু","Debt, Season",রি 
+ঌ,Li,,"Now Obsolete. Historically used in classical literature and poetry, it is rarely found in contemporary texts",লি 
+এ,E,"এক, এত","One, So Much",এ
+ঐ,Oi,"ঐক্য, ঐশ্বর্য","Unity, Wealth",ঐ
+ও,O,"ওষুধ, ওড়না","Medicine, Scarf",ও
+ঔ,Ou,"ঔষধি, ঔজ্জ্বল্য","Herbal, Radiance",ঔ

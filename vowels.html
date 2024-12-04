@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn Bangla স্বরবর্ণ</title>
+    <title>Learn Bangla Vowels (স্বরবর্ণ)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -69,52 +69,59 @@
     </footer>
 
     <script>
-        const apiUrl = "https://script.google.com/macros/s/AKfycbyoMt2-d1ZVA1ks_aX2Su9CEO_JvHnoBwtO0vEYgguU7LDkpEzWkMEd4agINsyzTgryoQ/exec";
+        // Raw URL for the CSV file in your GitHub repository
+        const csvFilePath = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/main/Bangla_Vowels.csv";
 
-        async function fetchData() {
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
+        async function fetchCSVData() {
+            const response = await fetch(csvFilePath);
+            const csvData = await response.text();
 
-                console.log("Fetched Data:", data); // Debugging
+            const rows = csvData.split("\n").slice(1); // Skip the header row
+            return rows.map(row => {
+                const [vowel, transliteration, exampleWords, meanings, name] = row.split(",");
+                return {
+                    vowel: vowel.trim(),
+                    transliteration: transliteration.trim(),
+                    exampleWords: exampleWords ? exampleWords.split("|").map(word => word.trim()) : [],
+                    meanings: meanings ? meanings.split("|").map(meaning => meaning.trim()) : [],
+                    name: name ? name.trim() : "" // Handle empty names
+                };
+            });
+        }
 
-                const vowelSection = document.getElementById("vowel-section");
-                data.forEach(item => {
-                    const card = document.createElement("div");
-                    card.className = "vowel-card";
+        async function displayVowels() {
+            const data = await fetchCSVData();
+            const vowelSection = document.getElementById("vowel-section");
 
-                    // Split example words and meanings into separate arrays
-                    const words = item.exampleWords[0].split(",").map(w => w.trim());
-                    const meanings = item.meanings[0].split(",").map(m => m.trim());
+            data.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "vowel-card";
 
-                    // Generate the HTML for the word list
-                    const wordListHTML = words.map((word, index) => `
-                        <li>${word} - ${meanings[index] || "No meaning"} 
-                            <i class="audio-icon" onclick="playAudio('${word}')">🔊</i>
-                        </li>
-                    `).join("");
+                // Generate word list
+                const wordListHTML = item.exampleWords.map((word, index) => `
+                    <li>${word} - ${item.meanings[index] || "No meaning"} 
+                        <i class="audio-icon" onclick="playAudio('${word}')">🔊</i>
+                    </li>
+                `).join("");
 
-                    // Populate the card
-                    card.innerHTML = `
-                        <h2>${item.vowel} (${item.transliteration})</h2>
-                        <p>Example Words:</p>
-                        <ul class="example-words">
-                            ${wordListHTML}
-                        </ul>
-                        <p>Pronounce ${item.vowel}: <i class="audio-icon" onclick="playAudio('${item.vowel}')">🔊</i></p>
-                    `;
+                // Add name only if it exists
+                const nameSection = item.name 
+                    ? `<p><strong>Name:</strong> ${item.name} 
+                        <i class="audio-icon" onclick="playAudio('${item.name}')">🔊</i></p>` 
+                    : "";
 
-                    vowelSection.appendChild(card);
-                });
-            } catch (error) {
-                console.error("Error fetching or processing data:", error);
-                document.getElementById("vowel-section").innerHTML = `
-                    <p style="color: red; text-align: center;">Error loading data. Please try again later.</p>
+                card.innerHTML = `
+                    <h2>${item.vowel} (${item.transliteration})</h2>
+                    ${nameSection}
+                    <p>Example Words:</p>
+                    <ul class="example-words">
+                        ${wordListHTML}
+                    </ul>
+                    <p>Pronounce ${item.vowel}: <i class="audio-icon" onclick="playAudio('${item.vowel}')">🔊</i></p>
                 `;
-            }
+
+                vowelSection.appendChild(card);
+            });
         }
 
         function playAudio(text) {
@@ -123,7 +130,7 @@
             audio.play();
         }
 
-        fetchData();
+        displayVowels();
     </script>
 </body>
 </html>
