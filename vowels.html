@@ -97,7 +97,7 @@
                 // Generate word list
                 const wordListHTML = item.exampleWords.map((word, index) => `
                     <li>${word} - ${item.meanings[index] || "No meaning"} 
-                        <i class="audio-icon" onclick="playAudio('${word.trim().replace(/\s/g, "_")}.mp3')">🔊</i>
+                        <i class="audio-icon" onclick="playAudio('${word}.mp3')">🔊</i>
                     </li>
                 `).join("");
 
@@ -106,7 +106,7 @@
                     <ul class="example-words">
                         ${wordListHTML}
                     </ul>
-                    <p>Pronounce ${item.vowel}: <i class="audio-icon" onclick="playAudio('${item.vowel.trim().replace(/\s/g, "_")}.mp3')">🔊</i></p>
+                    <p>Pronounce ${item.vowel}: <i class="audio-icon" onclick="playAudio('${item.vowel}.mp3')">🔊</i></p>
                 `;
 
                 vowelSection.appendChild(card);
