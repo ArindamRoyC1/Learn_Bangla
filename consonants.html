@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn Bangla ব্যঞ্জনবর্ণ</title>
+    <title>Learn Bangla Consonants (ব্যঞ্জনবর্ণ)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -52,12 +52,13 @@
             color: white;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
     <header>
         <h1>
-            Learn Bangla Consonants (ব্যঞ্জনবর্ণ 
-            <i class="audio-icon" onclick="playAudio('ব্যঞ্জনবর্ণ')">🔊</i>)
+            Learn Bangla Vowels (ব্যঞ্জনবর্ণ 
+            <i class="audio-icon" onclick="playAudio('consonant_title.mp3')">🔊</i>)
         </h1>
         <p>Click on the audio icons to hear pronunciations!</p>
     </header>
@@ -69,63 +70,61 @@
     </footer>
 
     <script>
-        const apiUrl = "https://script.google.com/macros/s/AKfycbyR3WksOHq5qrQ8wZcyhhmefBjQfEw4i-Ub5P9G3fhdbQxRJbPOJYJG2hy1T642INkv8w/exec";
+        const csvFilePath = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/main/Bangla_Consonants.csv";
+        const audioFolder = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/main/audio_files/";
 
+        async function fetchCSVData() {
+            const response = await fetch(csvFilePath);
+            const csvData = await response.text();
 
-
-        async function fetchData() {
-            try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-
-                console.log("Fetched Data:", data); // Debugging
-
-                const consonantSection = document.getElementById("consonant-section");
-                data.forEach(item => {
-                    const card = document.createElement("div");
-                    card.className = "consonant-card";
-
-                    // Split example words and meanings into separate arrays
-                    const words = item.exampleWords[0].split(",").map(w => w.trim());
-                    const meanings = item.meanings[0].split(",").map(m => m.trim());
-
-                    // Generate the HTML for the word list
-                    const wordListHTML = words.map((word, index) => `
-                        <li>${word} - ${meanings[index] || "No meaning"} 
-                            <i class="audio-icon" onclick="playAudio('${word}')">🔊</i>
-                        </li>
-                    `).join("");
-
-                    // Populate the card
-                    card.innerHTML = `
-                        <h2>${item.consonant} (${item.transliteration})</h2>
-                        <p>Example Words:</p>
-                        <ul class="example-words">
-                            ${wordListHTML}
-                        </ul>
-                        <p>Pronounce ${item.consonant}: <i class="audio-icon" onclick="playAudio('${item.consonant}')">🔊</i></p>
-                    `;
-
-                    consonantSection.appendChild(card);
-                });
-            } catch (error) {
-                console.error("Error fetching or processing data:", error);
-                document.getElementById("consonant-section").innerHTML = `
-                    <p style="color: red; text-align: center;">Error loading data. Please try again later.</p>
-                `;
-            }
+            // Parse CSV using PapaParse
+            const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
+            return parsedData.data.map(row => ({
+                consonant: row.Consonant.trim(),
+                transliteration: row.Transliteration.trim(),
+                exampleWords: row["Example Words"] ? row["Example Words"].split(",").map(word => word.trim()) : [],
+                meanings: row.Meanings ? row.Meanings.split(",").map(meaning => meaning.trim()) : []
+            }));
         }
 
-        function playAudio(text) {
-            const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=${encodeURIComponent(text)}&tl=bn`;
+        async function displayConsonants() {
+            const data = await fetchCSVData();
+            const consonantSection = document.getElementById("consonant-section");
+
+            data.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "consonant-card";
+
+                // Generate word list
+                const wordListHTML = item.exampleWords.length > 0 ? item.exampleWords.map((word, index) => `
+                    <li>${word} - ${item.meanings[index] || "No meaning"} 
+                        <i class="audio-icon" onclick="playAudio('${word}.mp3')">🔊</i>
+                    </li>
+                `).join("") : "";
+
+                // Special message logic
+                const specialMessage = item.exampleWords.length === 0 
+                    ? `<p>${item.meanings}</p>`
+                    : "";
+
+                card.innerHTML = `
+                    <h2>${item.consonant} (${item.transliteration})</h2>
+                    ${specialMessage}
+                    ${wordListHTML ? `<ul class="example-words">${wordListHTML}</ul>` : ""}
+                    <p>Pronounce ${item.consonant}: <i class="audio-icon" onclick="playAudio('${item.consonant}.mp3')">🔊</i></p>
+                `;
+
+                consonantSection.appendChild(card);
+            });
+        }
+
+        function playAudio(filename) {
+            const audioUrl = audioFolder + filename;
             const audio = new Audio(audioUrl);
             audio.play();
         }
 
-        fetchData();
+        displayConsonants();
     </script>
 </body>
 </html>
