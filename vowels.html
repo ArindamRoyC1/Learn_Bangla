@@ -95,17 +95,21 @@
                 card.className = "vowel-card";
 
                 // Generate word list
-                const wordListHTML = item.exampleWords.map((word, index) => `
+                const wordListHTML = item.exampleWords.length > 0 ? item.exampleWords.map((word, index) => `
                     <li>${word} - ${item.meanings[index] || "No meaning"} 
                         <i class="audio-icon" onclick="playAudio('${word}.mp3')">🔊</i>
                     </li>
-                `).join("");
+                `).join("") : "";
+
+                // Special message logic
+                const specialMessage = item.exampleWords.length === 0 
+                    ? `<p>${item.meanings}</p>`
+                    : "";
 
                 card.innerHTML = `
                     <h2>${item.vowel} (${item.transliteration})</h2>
-                    <ul class="example-words">
-                        ${wordListHTML}
-                    </ul>
+                    ${specialMessage}
+                    ${wordListHTML ? `<ul class="example-words">${wordListHTML}</ul>` : ""}
                     <p>Pronounce ${item.vowel}: <i class="audio-icon" onclick="playAudio('${item.vowel}.mp3')">🔊</i></p>
                 `;
 
