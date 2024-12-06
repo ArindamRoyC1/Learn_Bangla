@@ -24,9 +24,16 @@
         }
         .options {
             display: flex;
+            flex-direction: column; /* Stack items vertically */
             justify-content: center;
-            gap: 10px;
-            margin: 20px;
+            gap: 20px; /* Space between rows */
+            margin: 20px auto;
+            max-width: 600px; /* Limit overall width */
+        }
+        .option-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Space between buttons */
         }
         .option {
             padding: 10px 20px;
@@ -160,13 +167,30 @@
             const optionsDiv = document.getElementById("options");
             optionsDiv.innerHTML = "";
 
-            options.forEach(option => {
+            const firstRow = document.createElement("div");
+            firstRow.className = "option-row";
+
+            const secondRow = document.createElement("div");
+            secondRow.className = "option-row";
+
+            options.slice(0, Math.ceil(options.length / 2)).forEach(option => {
                 const optionButton = document.createElement("div");
                 optionButton.className = "option";
                 optionButton.textContent = option;
                 optionButton.onclick = () => checkAnswer(option);
-                optionsDiv.appendChild(optionButton);
+                firstRow.appendChild(optionButton);
             });
+
+            options.slice(Math.ceil(options.length / 2)).forEach(option => {
+                const optionButton = document.createElement("div");
+                optionButton.className = "option";
+                optionButton.textContent = option;
+                optionButton.onclick = () => checkAnswer(option);
+                secondRow.appendChild(optionButton);
+            });
+
+            optionsDiv.appendChild(firstRow);
+            optionsDiv.appendChild(secondRow);
 
             document.getElementById("reveal").style.display = "none";
             setButtonMode("Reveal");
@@ -231,5 +255,4 @@
 
         fetchCSVData().then(() => startTest());
     </script>
-</body>
-</html>
+</
