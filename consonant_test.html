@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consonant Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px;
+        }
+        #flashcard {
+            font-size: 4rem;
+            margin: 20px;
+            color: #007BFF;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px;
+        }
+        .option {
+            padding: 10px 20px;
+            border: 1px solid #007BFF;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: white;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+        #reveal {
+            display: none;
+            margin-top: 20px;
+        }
+        .toggle-button {
+            margin: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .toggle-button:hover {
+            background-color: #0056b3;
+        }
+        #seen {
+            margin: 20px auto;
+            max-width: 80%;
+        }
+        .seen-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            margin: 10px 0;
+            padding: 10px;
+            text-align: left;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Consonant Test</h1>
+        <p>Test your knowledge of Bengali consonants!</p>
+    </header>
+
+    <div id="flashcard"></div>
+    <div class="options" id="options"></div>
+    <div id="reveal">
+        <h2>Details</h2>
+        <p id="details"></p>
+    </div>
+    <button class="toggle-button" id="toggle-button" onclick="handleButtonClick()">Reveal</button>
+
+    <div id="seen">
+        <h2>Seen Consonants</h2>
+        <div id="seen-cards"></div>
+    </div>
+
+    <footer>
+        <p>Learn Bangla © 2024 | Contact: info@learnbangla.com</p>
+    </footer>
+
+    <script>
+        const csvFilePath = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/refs/heads/main/consonants.csv";
+        const audioFolder = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/refs/heads/main/audio_files/";
+        let data = [];
+        let seen = []; // Track seen consonants
+        let currentItem = null; // Track the current item for reveal
+        let isRevealMode = true; // Track button mode
+
+        async function fetchCSVData() {
+            const response = await fetch(csvFilePath);
+            const csvData = await response.text();
+
+            // Parse CSV using PapaParse
+            const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
+            data = parsedData.data.map(row => ({
+                consonant: row.consonant.trim(),
+                transliteration: row.transliteration.trim(),
+                example_1: row.example_1.trim(),
+                meaning_1: row.meaning_1.trim(),
+                example_2: row.example_2.trim(),
+                meaning_2: row.meaning_2.trim(),
+                token_1: row.token_1.trim(),
+                token_2: row.token_2.trim(),
+                token_name: row.token_name.trim()
+            }));
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function getOptions(correctOption) {
+            const options = data.map(item => item.transliteration);
+            const incorrectOptions = options.filter(opt => opt !== correctOption);
+            shuffleArray(incorrectOptions);
+            return [correctOption, ...incorrectOptions.slice(0, 9)].sort(() => Math.random() - 0.5);
+        }
+
+        function playAudio(token) {
+            const audioUrl = `${audioFolder}${token}.mp3`;
+            const audio = new Audio(audioUrl);
+            audio.play();
+        }
+
+        function startTest() {
+            const unseenData = data.filter(item => !seen.includes(item.consonant));
+            if (unseenData.length === 0) {
+                alert("You've reviewed all consonants!");
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * unseenData.length);
+            currentItem = unseenData[randomIndex];
+            seen.push(currentItem.consonant);
+
+            document.getElementById("flashcard").textContent = currentItem.consonant;
+
+            const options = getOptions(currentItem.transliteration);
+
+            const optionsDiv = document.getElementById("options");
+            optionsDiv.innerHTML = "";
+
+            options.forEach(option => {
+                const optionButton = document.createElement("div");
+                optionButton.className = "option";
+                optionButton.textContent = option;
+                optionButton.onclick = () => checkAnswer(option);
+                optionsDiv.appendChild(optionButton);
+            });
+
+            document.getElementById("reveal").style.display = "none";
+            setButtonMode("Reveal");
+        }
+
+        function checkAnswer(selected) {
+            if (selected === currentItem.transliteration) {
+                alert("Correct!");
+                revealDetails();
+                setButtonMode("Next");
+            } else {
+                alert("Incorrect! Try again.");
+            }
+        }
+
+        function revealDetails() {
+            if (!currentItem) return;
+            const revealDiv = document.getElementById("reveal");
+            const detailsDiv = document.getElementById("details");
+            revealDiv.style.display = "block";
+            detailsDiv.innerHTML = `
+                <strong>${currentItem.consonant} (${currentItem.transliteration})</strong>
+                <button onclick="playAudio('${currentItem.token_name}')">🔊</button><br>
+                Example 1: ${currentItem.example_1} - ${currentItem.meaning_1}
+                <button onclick="playAudio('${currentItem.token_1}')">🔊</button><br>
+                Example 2: ${currentItem.example_2} - ${currentItem.meaning_2}
+                <button onclick="playAudio('${currentItem.token_2}')">🔊</button>
+            `;
+
+            addSeenCard(currentItem);
+        }
+
+        function setButtonMode(mode) {
+            const button = document.getElementById("toggle-button");
+            button.textContent = mode;
+            isRevealMode = mode === "Reveal";
+        }
+
+        function handleButtonClick() {
+            if (isRevealMode) {
+                revealDetails();
+                setButtonMode("Next");
+            } else {
+                startTest();
+            }
+        }
+
+        function addSeenCard(item) {
+            const seenCardsDiv = document.getElementById("seen-cards");
+            const card = document.createElement("div");
+            card.className = "seen-card";
+            card.innerHTML = `
+                <strong>${item.consonant} (${item.transliteration})</strong>
+                <button onclick="playAudio('${item.token_name}')">🔊</button><br>
+                Example 1: ${item.example_1} - ${item.meaning_1}
+                <button onclick="playAudio('${item.token_1}')">🔊</button><br>
+                Example 2: ${item.example_2} - ${item.meaning_2}
+                <button onclick="playAudio('${item.token_2}')">🔊</button>
+            `;
+            seenCardsDiv.appendChild(card);
+        }
+
+        fetchCSVData().then(() => startTest());
+    </script>
+</body>
+</html>
