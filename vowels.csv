@@ -1,0 +1,13 @@
+vowel,transliteration,example_1,token_1,example_2,token_2,meaning_1,meaning_2,name,token_name,message
+অ,A,অজগর,vowel_python_a1b2,অমল,vowel_name_c3d4,Python,A common name,অ,vowel_a_e5f6,
+আ,Aa,আম,vowel_mango_g7h8,আকাশ,vowel_sky_i9j0,Mango,Sky,আ,vowel_aa_k1l2,
+ই,I,ইঁদুর,vowel_rat_m3n4,ইলিশ,vowel_hilsa_o5p6,Rat,Hilsa (a fish),হ্রস্ব ই,vowel_i_q7r8,
+ঈ,Ee,ঈগল,vowel_eagle_s9t0,ঈশ্বর,vowel_god_u1v2,Eagle,God,দীর্ঘ ঈ,vowel_ee_w3x4,
+উ,U,উট,vowel_camel_y5z6,উৎসব,vowel_festival_a7b8,Camel,Festival,হ্রস্ব উ,vowel_u_c9d0,
+ঊ,Oo,ঊষা,vowel_dawn_e1f2,ঊনান,vowel_stove_g3h4,Dawn,Stove,দীর্ঘ ঊ,vowel_oo_i5j6,
+ঋ,Ri,ঋণ,vowel_debt_k7l8,ঋতু,vowel_season_m9n0,Debt,Season,রি,vowel_ri_o1p2,
+ঌ,Li,,,,Now Obsolete,,,লি,vowel_li_q3r4,Obsolete. Historically used in classical literature and poetry. Rarely found in contemporary texts.
+এ,E,এক,vowel_one_s5t6,এত,vowel_so_much_u7v8,One,So Much,এ,vowel_e_w9x0,
+ঐ,Oi,ঐক্য,vowel_unity_a1b2,ঐশ্বর্য,vowel_wealth_c3d4,Unity,Wealth,ঐ,vowel_oi_e5f6,
+ও,O,ওষুধ,vowel_medicine_g7h8,ওড়না,vowel_scarf_i9j0,Medicine,Scarf,ও,vowel_o_k1l2,
+ঔ,Ou,ঔষধি,vowel_herbal_m3n4,ঔজ্জ্বল্য,vowel_radiance_o5p6,Herbal,Radiance,ঔ,vowel_ou_q7r8,
