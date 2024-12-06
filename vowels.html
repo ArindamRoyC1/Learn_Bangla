@@ -57,8 +57,8 @@
 <body>
     <header>
         <h1>
-            Learn Bangla Vowels (স্বরবর্ণ 
-            <i class="audio-icon" onclick="playAudio('vowel_title.mp3')">🔊</i>)
+            Learn Bangla Vowels (স্বরবর্ণ)
+            <i class="audio-icon" onclick="playAudio('vowel_title')">🔊</i>
         </h1>
         <p>Click on the audio icons to hear pronunciations!</p>
     </header>
@@ -70,8 +70,8 @@
     </footer>
 
     <script>
-        const csvFilePath = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/main/Bangla_Vowels.csv";
-        const audioFolder = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/main/audio_files/";
+        const csvFilePath = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/refs/heads/main/vowels.csv";
+        const audioFolder = "https://raw.githubusercontent.com/ArindamRoyC1/Learn_Bangla/refs/heads/main/audio_files/";
 
         async function fetchCSVData() {
             const response = await fetch(csvFilePath);
@@ -80,10 +80,16 @@
             // Parse CSV using PapaParse
             const parsedData = Papa.parse(csvData, { header: true, skipEmptyLines: true });
             return parsedData.data.map(row => ({
-                vowel: row.Vowel.trim(),
-                transliteration: row.Transliteration.trim(),
-                exampleWords: row["Example Words"] ? row["Example Words"].split(",").map(word => word.trim()) : [],
-                meanings: row.Meanings ? row.Meanings.split(",").map(meaning => meaning.trim()) : []
+                vowel: row.vowel.trim(),
+                transliteration: row.transliteration.trim(),
+                example_1: row.example_1.trim(),
+                token_1: row.token_1.trim(),
+                example_2: row.example_2.trim(),
+                token_2: row.token_2.trim(),
+                meaning_1: row.meaning_1.trim(),
+                meaning_2: row.meaning_2.trim(),
+                token_name: row.token_name.trim(),
+                message: row.message.trim()
             }));
         }
 
@@ -95,31 +101,35 @@
                 const card = document.createElement("div");
                 card.className = "vowel-card";
 
-                // Generate word list
-                const wordListHTML = item.exampleWords.length > 0 ? item.exampleWords.map((word, index) => `
-                    <li>${word} - ${item.meanings[index] || "No meaning"} 
-                        <i class="audio-icon" onclick="playAudio('${word}.mp3')">🔊</i>
-                    </li>
-                `).join("") : "";
+                // Generate example words list if examples and tokens are present
+                const wordListHTML = `
+                    ${item.example_1 && item.token_1 ? `<li>${item.example_1} - ${item.meaning_1 || "No meaning"} 
+                        <i class="audio-icon" onclick="playAudio('${item.token_1}')">🔊</i></li>` : ""}
+                    ${item.example_2 && item.token_2 ? `<li>${item.example_2} - ${item.meaning_2 || "No meaning"} 
+                        <i class="audio-icon" onclick="playAudio('${item.token_2}')">🔊</i></li>` : ""}
+                `;
 
-                // Special message logic
-                const specialMessage = item.exampleWords.length === 0 
-                    ? `<p>${item.meanings}</p>`
+                // Add message only if it exists
+                const messageHTML = item.message ? `<p>${item.message}</p>` : "";
+
+                // Skip name audio if not present
+                const nameAudioHTML = item.token_name 
+                    ? `<i class="audio-icon" onclick="playAudio('${item.token_name}')">🔊</i>` 
                     : "";
 
+                // Build card content
                 card.innerHTML = `
-                    <h2>${item.vowel} (${item.transliteration})</h2>
-                    ${specialMessage}
+                    <h2>${item.vowel} (${item.transliteration}) ${nameAudioHTML}</h2>
                     ${wordListHTML ? `<ul class="example-words">${wordListHTML}</ul>` : ""}
-                    <p>Pronounce ${item.vowel}: <i class="audio-icon" onclick="playAudio('${item.vowel}.mp3')">🔊</i></p>
+                    ${messageHTML}
                 `;
 
                 vowelSection.appendChild(card);
             });
         }
 
-        function playAudio(filename) {
-            const audioUrl = audioFolder + filename;
+        function playAudio(token) {
+            const audioUrl = `${audioFolder}${token}.mp3`;
             const audio = new Audio(audioUrl);
             audio.play();
         }
